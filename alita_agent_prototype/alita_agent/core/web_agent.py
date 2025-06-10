@@ -1,7 +1,11 @@
-"""The Web Agent: Information retrieval from external sources."""
+"""The Web Agent: information retrieval using DuckDuckGo."""
+
+from __future__ import annotations
+
+import requests
 from typing import Dict, Any, List
 from dataclasses import dataclass
-from datetime import datetime
+
 from ..config.settings import AlitaConfig
 from ..utils.logging import setup_logging
 
@@ -11,17 +15,31 @@ class SearchResult:
     results: List[Dict[str, Any]]
 
 class WebAgent:
-    """A placeholder for a real web search agent."""
+    """Simple web search powered by DuckDuckGo's instant answer API."""
+
     def __init__(self, config: AlitaConfig):
         self.config = config
         self.logger = setup_logging("WebAgent")
-        self.logger.info("Placeholder Web Agent initialized.")
+        self.logger.info("Web Agent ready.")
 
     async def search(self, query: str) -> SearchResult:
-        """MOCK: Simulates a web search."""
-        self.logger.warning(f"Using MOCK web search for query: '{query}'")
-        mock_results = [
-            {"title": "Python Official Documentation", "url": "https://docs.python.org", "snippet": "The official source for Python documentation."},
-            {"title": "Stack Overflow - Python", "url": "https://stackoverflow.com/questions/tagged/python", "snippet": "Questions and answers about Python programming."}
-        ]
-        return SearchResult(query=query, results=mock_results)
+        """Perform a real web search."""
+
+        self.logger.info(f"Searching the web for: {query}")
+        params = {"q": query, "format": "json", "no_html": 1, "no_redirect": 1}
+        try:
+            resp = requests.get("https://api.duckduckgo.com/", params=params, timeout=10)
+            resp.raise_for_status()
+            data = resp.json()
+            results: List[Dict[str, Any]] = []
+            for item in data.get("RelatedTopics", []):
+                if isinstance(item, dict) and "FirstURL" in item:
+                    results.append({
+                        "title": item.get("Text", ""),
+                        "url": item.get("FirstURL"),
+                        "snippet": item.get("Text", "")
+                    })
+            return SearchResult(query=query, results=results)
+        except Exception as e:
+            self.logger.error(f"Web search failed: {e}")
+            return SearchResult(query=query, results=[])

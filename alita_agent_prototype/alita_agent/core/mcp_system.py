@@ -1,6 +1,7 @@
 
 """The MCP System: Handles dynamic tool creation, validation, and execution."""
 import json
+import asyncio
 from pathlib import Path
 from typing import Dict, Any, Optional
 from ..config.settings import AlitaConfig
@@ -8,6 +9,8 @@ from ..utils.logging import setup_logging
 from ..exceptions import ToolCreationError
 from .web_agent import WebAgent
 from ..utils.security import SandboxExecutor
+from ..utils.llm_client import LLMClient
+from ..config.prompts import PromptTemplates
 
 class MCPSystem:
     """Manages the lifecycle of Model Context Protocols (Tools)."""
@@ -17,8 +20,18 @@ class MCPSystem:
         self.web_agent = web_agent
         self.tools_dir = self.config.get_workspace_path("tools")
         self.sandbox = SandboxExecutor(config)
-        # NOTE: This would eventually call a real LLM API
-        self.llm_code_generator = self._mock_llm_code_generation
+        self.llm = LLMClient(config)
+
+        if any([
+            self.config.openai_api_key,
+            self.config.anthropic_api_key,
+            self.config.gemini_api_key,
+            self.config.deepseek_api_key,
+        ]):
+            self.llm_code_generator = self._generate_code_via_llm
+        else:
+            self.logger.warning("No LLM API keys configured. Using mock code generation.")
+            self.llm_code_generator = self._mock_llm_code_generation
 
     async def create_tool(self, name: str, task_description: str) -> None:
         self.logger.info(f"Initiating creation for tool: '{name}'")
@@ -31,7 +44,10 @@ class MCPSystem:
         if search_results and search_results.results:
             context_str = json.dumps(search_results.results[0], indent=2)
 
-        code = self.llm_code_generator(name, task_description, context_str)
+        if asyncio.iscoroutinefunction(self.llm_code_generator):
+            code = await self.llm_code_generator(name, task_description, context_str)
+        else:
+            code = self.llm_code_generator(name, task_description, context_str)
         
         if await self.sandbox.validate_code(code):
             self._save_tool_to_disk(name, code, task_description)
@@ -75,6 +91,17 @@ if __name__ == "__main__":
         print("This script should be run with JSON input via stdin.")
 
 '''
+
+    async def _generate_code_via_llm(self, name: str, description: str, context: str) -> str:
+        """Generate Python code using the configured LLM."""
+        prompt = PromptTemplates.TOOL_GENERATION.format(
+            task_description=description,
+            search_context=context,
+            tool_name=name,
+            example_input="{}",
+            example_output="{}",
+        )
+        return await self.llm.generate(prompt)
 
     async def execute_tool(self, tool_name: str, parameters: Dict[str, Any]):
         tool_path = self.tools_dir / f"{tool_name}.py"

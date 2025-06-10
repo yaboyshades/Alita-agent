@@ -4,6 +4,8 @@ from ..config.settings import AlitaConfig
 from ..utils.logging import setup_logging
 from .web_agent import WebAgent
 from .mcp_system import MCPSystem
+from .memory import HierarchicalMemorySystem
+from .planning import HybridPlanner, PlanningResult
 from ..exceptions import ToolCreationError, ToolExecutionError
 from ..utils.llm_client import LLMClient
 
@@ -13,6 +15,8 @@ class ManagerAgent:
         self.config = config
         self.logger = setup_logging("ManagerAgent")
         self.web_agent = WebAgent(config)
+        self.memory = HierarchicalMemorySystem(config)
+        self.planner = HybridPlanner(config)
         self.mcp_system = MCPSystem(config, self.web_agent)
         self.llm = LLMClient(config)
         self.logger.info("Manager Agent initialized.")
@@ -34,15 +38,26 @@ class ManagerAgent:
             else:
                 self.logger.info(f"Found existing tool: '{tool_name}'")
 
-            # 3. Execute the tool. For this prototype, we'll pass the user query as the main parameter.
+            # 3. Plan and execute
+            plan = await self.planner.plan(user_query, [tool_name])
+            self.logger.debug(f"Plan generated: {plan}")
+
             self.logger.info(f"Executing tool '{tool_name}'...")
             execution_result = await self.mcp_system.execute_tool(
-                tool_name, 
-                parameters={"task_query": user_query}
+                tool_name,
+                parameters={"task_query": user_query},
             )
             
             if not execution_result.success:
                 raise ToolExecutionError(f"Tool execution failed: {execution_result.error}")
+
+            await self.memory.store_episode(
+                {
+                    "query": user_query,
+                    "tool": tool_name,
+                    "result": execution_result.result,
+                }
+            )
 
             self.logger.info("Task processed successfully.")
             return {"success": True, "result": execution_result.result}

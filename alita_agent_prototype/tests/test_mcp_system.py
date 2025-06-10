@@ -1,6 +1,3 @@
-def test_mcp_system_placeholder():
-    assert True  # Placeholder for MCP system tests
-
 def test_mcp_system_tool_creation_and_execution():
     import asyncio
     from alita_agent.config.settings import AlitaConfig
