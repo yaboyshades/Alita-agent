@@ -9,7 +9,7 @@ Of course. You've provided a phenomenal deep-dive into the philosophy and archit
 | ALITA Component | Concrete Implementation | Notes |
 | :--- | :--- | :--- |
 | **Manager Agent** | **Orchestrator Core (`manager.py`)** | A Python class that runs the main ReAct loop. It contains the primary LLM, manages the task state, and decides which subsystem to call next. This is the brain. |
-| **Web Agent** | **Information Retrieval Service** | A set of functions for external lookups: `google_search()`, `github_search()`, and a `web_scraper()` using `requests` and `BeautifulSoup`. |
+| **Web Agent** | **Information Retrieval Service** | A set of asynchronous lookup functions: `google_search()`, `github_search()`, and a `web_scraper()` using `aiohttp` and `BeautifulSoup`. |
 | **MCP Box** | **Vector Database (`mcp_store.py`)** | A local vector store (ChromaDB/FAISS) where each MCP is an object. The `description` field is vectorized for semantic search. This is the agent's long-term capability memory. |
 | **Tool Creation** | **Toolsmith Module (`toolsmith.py`)** | A factory that takes a tool description, prompts a powerful LLM to generate Python code, and then calls the sandbox to test and validate it. |
 | **Tool Execution** | **Sandbox Executor (`sandbox.py`)** | A security-critical module that runs arbitrary Python code inside a heavily restricted **Docker container** (`--network=none`, resource limits). |
@@ -235,7 +235,6 @@ classifiers = [
 # Core async and web libraries
 asyncio>=3.4.3
 aiohttp>=3.8.0
-requests>=2.28.0
 beautifulsoup4>=4.11.0
 
 # Optional API clients (install as needed)
@@ -492,7 +491,7 @@ class AlitaConfig:
         self.planning.setdefault('max_react_steps', 10)
         self.mcp.setdefault('execution_timeout', 60)
         self.security.setdefault('sandbox_enabled', True)
-        self.security.setdefault('allowed_imports', ['json', 'requests', 'math', 'random'])
+        self.security.setdefault('allowed_imports', ['json', 'aiohttp', 'math', 'random'])
 
     def get_workspace_path(self, sub_dir: str) -> Path:
         """Returns the absolute path to a subdirectory in the workspace."""
