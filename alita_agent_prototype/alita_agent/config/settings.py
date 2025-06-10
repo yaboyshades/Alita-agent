@@ -36,7 +36,10 @@ class AlitaConfig:
         self.security.setdefault('sandbox_enabled', True)
         self.security.setdefault('allowed_imports', ['json', 'aiohttp', 'math', 'random'])
         self.security.setdefault('use_docker', True)
+
         self._ensure_credentials()
+
+
 
     def get_workspace_path(self, sub_dir: str) -> Path:
         """Returns the absolute path to a subdirectory in the workspace."""
