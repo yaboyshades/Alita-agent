@@ -56,6 +56,9 @@ python examples/basic_usage.py
 
 # Run the advanced demo to see learning and tool creation over time
 python examples/advanced_demo.py
+
+# Launch the GUI chat interface
+python examples/gui_chat.py
 ```
 
 ## 🏗️ Architecture
