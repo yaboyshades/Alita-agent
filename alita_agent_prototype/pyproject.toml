@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "A self-evolving AI agent framework for autonomous tool creation."
 authors = [{name = "ShredMasterFlex", email = "flex@example.com"}]
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
