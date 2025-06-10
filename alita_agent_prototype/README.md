@@ -33,11 +33,9 @@ Edit the `.env` file that was created in the root directory and add your API key
 ```bash
 # .env file
 OPENAI_API_KEY="your_openai_key_here"
-# ANTHROPIC_API_KEY="your_anthropic_key_here"
 GEMINI_API_KEY="your_gemini_key_here"
-DEEPSEEK_API_KEY="your_deepseek_key_here"
-LLM_PROVIDER="openai|anthropic|gemini|deepseek"
-LLM_MODEL="gpt-4|claude-3|gemini-pro|deepseek-chat"
+LLM_PROVIDER="openai|gemini"
+LLM_MODEL="gpt-4|gemini-pro"
 ```
 
 ### 3. Run the Examples
@@ -60,6 +58,9 @@ python examples/advanced_demo.py
 # Launch the GUI chat interface
 python examples/gui_chat.py
 ```
+
+
+All task results are persisted to `workspace/memory/episodic.json`.
 
 ## 🏗️ Architecture
 

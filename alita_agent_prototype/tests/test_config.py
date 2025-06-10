@@ -8,5 +8,5 @@ def test_llm_client_config():
     from alita_agent.utils.llm_client import LLMClient
     config = AlitaConfig()
     llm = LLMClient(config)
-    assert llm.provider in {"openai", "gemini", "deepseek"}
+    assert llm.provider in {"openai", "gemini"}
     assert isinstance(llm.model, str)
