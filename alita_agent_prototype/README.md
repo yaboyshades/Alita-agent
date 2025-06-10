@@ -26,9 +26,12 @@ First, create a virtual environment and install the required dependencies using 
 python install.py
 ```
 
+
 ### 2. Configure API Keys
 
 Edit the `.env` file that was created in the root directory and add your API keys.
+If you don't provide them ahead of time, running an example will prompt for the
+provider, model, and key and write them back to `.env`.
 
 ```bash
 # .env file
@@ -37,6 +40,18 @@ GEMINI_API_KEY="your_gemini_key_here"
 LLM_PROVIDER="openai|gemini"
 LLM_MODEL="gpt-4|gemini-pro"
 ```
+
+### 2. Configure API Keys
+
+Edit the `.env` file that was created in the root directory and add your API keys.
+
+```bash
+# .env file
+OPENAI_API_KEY="your_openai_key_here"
+GEMINI_API_KEY="your_gemini_key_here"
+
+```
+
 
 ### 3. Run the Examples
 
@@ -50,6 +65,17 @@ source .venv/bin/activate
 # .venv\Scripts\activate
 
 # Run the basic example to see a simple task processed
+python examples/basic_usage.py
+
+# Run the advanced demo to see learning and tool creation over time
+python examples/advanced_demo.py
+
+# Launch the GUI chat interface
+python examples/gui_chat.py
+```
+
+All task results are persisted to `workspace/memory/episodic.json`.
+
 python examples/basic_usage.py
 
 # Run the advanced demo to see learning and tool creation over time

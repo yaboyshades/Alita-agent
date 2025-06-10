@@ -13,10 +13,18 @@ This document lists the remaining placeholder code and the concrete steps requir
 
 ### Progress
 - ✅ `MCPSystem` now calls `LLMClient.generate` through the new `_generate_tool_code` method.
+
+=======
+
+### Progress
+- ✅ `MCPSystem` now calls `LLMClient.generate` through the new `_generate_tool_code` method.
+
 ## 2. Complete LLM Provider Support
 - **File:** `alita_agent/utils/llm_client.py`
 - **Placeholder:** `deepseek` branch raises `NotImplementedError`.
 - **Action:**
+
+
 
   - Removed DeepSeek support to keep the client functional.
   - Updated docs and tests for the remaining providers.
@@ -24,8 +32,11 @@ This document lists the remaining placeholder code and the concrete steps requir
 ### Progress
 - ✅ Dropped DeepSeek branch and cleaned up configuration.
 
+
+=======
   - Add HTTP client code to call DeepSeek's API or remove the provider option until implemented.
   - Update tests to verify generation with each supported provider.
+
 
 
 ## 3. Real Sandbox Execution
@@ -40,6 +51,11 @@ This document lists the remaining placeholder code and the concrete steps requir
 ### Progress
 - ✅ SandboxExecutor now attempts Docker execution with network isolation and falls back to subprocess when Docker is unavailable.
 
+=======
+
+### Progress
+- ✅ SandboxExecutor now attempts Docker execution with network isolation and falls back to subprocess when Docker is unavailable.
+
 
 ## 4. Expand Testing Suite
 - **File:** `tests/`
@@ -47,6 +63,9 @@ This document lists the remaining placeholder code and the concrete steps requir
 - **Action:**
   - Remove placeholder test and add unit tests for tool creation, execution, and error handling.
   - Add integration tests covering the ManagerAgent loop with mocked LLM responses.
+
+
+=======
 
 
 ### Progress
@@ -60,6 +79,9 @@ This document lists the remaining placeholder code and the concrete steps requir
   - Flesh out the hybrid planner logic described in `plan.md`.
 
 
+=======
+
+
 ### Progress
 - ✅ Memory now persists episodes to disk and planner returns basic action plans.
 
@@ -67,6 +89,18 @@ This document lists the remaining placeholder code and the concrete steps requir
 - Update `README.md` and prototype README with instructions for the completed features.
 - Provide an end-to-end example showing tool creation and execution without mock components.
 
+
+### Progress
+- ✅ READMEs describe Docker sandboxing and persistent memory.
+
+## 7. Interactive Configuration
+- **File:** `alita_agent/config/settings.py`
+- **Feature:** Prompt the user for missing LLM provider, model, and API keys on first run and persist them to `.env`.
+
+### Progress
+- ✅ Config now saves credentials interactively when missing.
+
+=======
 
 ### Progress
 - ✅ READMEs describe Docker sandboxing and persistent memory.

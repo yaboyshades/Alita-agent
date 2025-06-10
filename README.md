@@ -53,7 +53,9 @@ python install.py
 
 ### 2. Configure API Keys
 
-Edit the `.env` file that was created in the root directory and add your API keys.
+Edit the `.env` file that was created in the root directory and add your API keys. If you
+skip this step, the first time you run any example the system will prompt for the missing
+provider, model, and key and persist them to `.env` for future runs.
 
 ```bash
 # .env file
