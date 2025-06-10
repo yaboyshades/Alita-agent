@@ -10,8 +10,8 @@ class LLMClient:
     async def generate(self, prompt: str) -> str:
         if self.provider == "openai":
             import openai
-            openai.api_key = self.config.openai_api_key
-            response = await openai.ChatCompletion.acreate(
+            client = openai.AsyncOpenAI(api_key=self.config.openai_api_key)
+            response = await client.chat.completions.create(
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}]
             )
@@ -22,9 +22,5 @@ class LLMClient:
             model = genai.GenerativeModel(self.model)
             response = await model.generate_content_async(prompt)
             return response.text.strip()
-        elif self.provider == "deepseek":
-            # Placeholder for DeepSeek API call
-            # You would use requests or httpx to call DeepSeek's API
-            raise NotImplementedError("DeepSeek integration not implemented yet.")
         else:
             raise ValueError(f"Unknown LLM provider: {self.provider}")
