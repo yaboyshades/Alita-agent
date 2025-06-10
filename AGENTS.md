@@ -10,6 +10,9 @@ This document lists the remaining placeholder code and the concrete steps requir
   - Build prompts that incorporate the task description and search context.
   - Remove references to the mock function and call the real provider.
 
+### Progress
+- ✅ `MCPSystem` now calls `LLMClient.generate` through the new `_generate_tool_code` method.
+
 ## 2. Complete LLM Provider Support
 - **File:** `alita_agent/utils/llm_client.py`
 - **Placeholder:** `deepseek` branch raises `NotImplementedError`.
