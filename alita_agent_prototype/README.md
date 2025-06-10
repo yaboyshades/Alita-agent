@@ -2,7 +2,6 @@
 
 A minimalist dual-agent architecture that enables autonomous tool creation and self-evolution through symbolic learning and dynamic planning.
 
-The Python sources and tests live in the `alita_agent_prototype` directory.
 ## 🚀 Features
 
 - **Self-Evolving Architecture**: Creates and optimizes tools autonomously based on task needs.
