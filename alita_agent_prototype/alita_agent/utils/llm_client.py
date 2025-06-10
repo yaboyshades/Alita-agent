@@ -10,8 +10,8 @@ class LLMClient:
     async def generate(self, prompt: str) -> str:
         if self.provider == "openai":
             import openai
-            openai.api_key = self.config.openai_api_key
-            response = await openai.ChatCompletion.acreate(
+            client = openai.AsyncOpenAI(api_key=self.config.openai_api_key)
+            response = await client.chat.completions.create(
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}]
             )

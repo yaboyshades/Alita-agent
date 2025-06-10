@@ -11,10 +11,11 @@ This document lists the remaining placeholder code and the concrete steps requir
   - Remove references to the mock function and call the real provider.
 
 
+
+
 ### Progress
 - ✅ `MCPSystem` now calls `LLMClient.generate` through the new `_generate_tool_code` method.
 
-=======
 
 ### Progress
 - ✅ `MCPSystem` now calls `LLMClient.generate` through the new `_generate_tool_code` method.
@@ -26,6 +27,8 @@ This document lists the remaining placeholder code and the concrete steps requir
 
 
 
+
+
   - Removed DeepSeek support to keep the client functional.
   - Updated docs and tests for the remaining providers.
 
@@ -33,7 +36,8 @@ This document lists the remaining placeholder code and the concrete steps requir
 - ✅ Dropped DeepSeek branch and cleaned up configuration.
 
 
-=======
+
+
   - Add HTTP client code to call DeepSeek's API or remove the provider option until implemented.
   - Update tests to verify generation with each supported provider.
 
@@ -56,6 +60,12 @@ This document lists the remaining placeholder code and the concrete steps requir
 ### Progress
 - ✅ SandboxExecutor now attempts Docker execution with network isolation and falls back to subprocess when Docker is unavailable.
 
+=======
+
+### Progress
+- ✅ SandboxExecutor now attempts Docker execution with network isolation and falls back to subprocess when Docker is unavailable.
+
+
 
 ## 4. Expand Testing Suite
 - **File:** `tests/`
@@ -64,8 +74,6 @@ This document lists the remaining placeholder code and the concrete steps requir
   - Remove placeholder test and add unit tests for tool creation, execution, and error handling.
   - Add integration tests covering the ManagerAgent loop with mocked LLM responses.
 
-
-=======
 
 
 ### Progress
@@ -77,9 +85,6 @@ This document lists the remaining placeholder code and the concrete steps requir
 - **Action:**
   - Implement persistent episodic memory using the workspace directory.
   - Flesh out the hybrid planner logic described in `plan.md`.
-
-
-=======
 
 
 ### Progress
@@ -100,9 +105,9 @@ This document lists the remaining placeholder code and the concrete steps requir
 ### Progress
 - ✅ Config now saves credentials interactively when missing.
 
-=======
 
 ### Progress
 - ✅ READMEs describe Docker sandboxing and persistent memory.
 - 
+
 Follow these steps sequentially to produce a no-nonsense v0.1 release of the Alita Agent where every module performs real work and no placeholders remain.

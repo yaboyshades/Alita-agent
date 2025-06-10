@@ -3,6 +3,8 @@ from alita_agent.config.settings import AlitaConfig
 from alita_agent.core.manager_agent import ManagerAgent
 
 
+
+
 def test_manager_agent_process_task(tmp_path):
     config = AlitaConfig(workspace_dir=str(tmp_path))
     manager = ManagerAgent(config)
@@ -17,7 +19,6 @@ def test_manager_agent_process_task(tmp_path):
 
     asyncio.run(run())
 
-=======
 def test_manager_agent_process_task():
     config = AlitaConfig()
     agent = ManagerAgent(config)
