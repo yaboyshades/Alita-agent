@@ -38,7 +38,7 @@ The Python sources and tests live in the `alita_agent_prototype` directory.
 
 - Python 3.10 or higher
 - Docker (for secure sandboxed code execution)
-- API keys for an LLM provider (e.g., OpenAI, Anthropic)
+- API keys for an LLM provider (OpenAI or Gemini)
 
 ## ⚡ Quick Start
 
@@ -58,11 +58,9 @@ Edit the `.env` file that was created in the root directory and add your API key
 ```bash
 # .env file
 OPENAI_API_KEY="your_openai_key_here"
-# ANTHROPIC_API_KEY="your_anthropic_key_here"
 GEMINI_API_KEY="your_gemini_key_here"
-DEEPSEEK_API_KEY="your_deepseek_key_here"
-LLM_PROVIDER="openai|anthropic|gemini|deepseek"
-LLM_MODEL="gpt-4|claude-3|gemini-pro|deepseek-chat"
+LLM_PROVIDER="openai|gemini"
+LLM_MODEL="gpt-4|gemini-pro"
 ```
 
 ### 3. Run the Examples
@@ -81,7 +79,12 @@ python examples/basic_usage.py
 
 # Run the advanced demo to see learning and tool creation over time
 python examples/advanced_demo.py
+
+# Launch the GUI chat interface
+python examples/gui_chat.py
 ```
+
+Task results are logged in `workspace/memory/episodic.json` for future reference.
 
 ## 🏗️ Architecture
 

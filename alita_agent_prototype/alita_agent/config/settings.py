@@ -14,9 +14,7 @@ class AlitaConfig:
 
     # API Configuration
     openai_api_key: Optional[str] = field(default_factory=lambda: os.getenv('OPENAI_API_KEY'))
-    anthropic_api_key: Optional[str] = field(default_factory=lambda: os.getenv('ANTHROPIC_API_KEY'))
     gemini_api_key: Optional[str] = field(default_factory=lambda: os.getenv('GEMINI_API_KEY'))
-    deepseek_api_key: Optional[str] = field(default_factory=lambda: os.getenv('DEEPSEEK_API_KEY'))
     llm_provider: Optional[str] = field(default_factory=lambda: os.getenv('LLM_PROVIDER', 'openai'))
     llm_model: Optional[str] = field(default_factory=lambda: os.getenv('LLM_MODEL', 'gpt-4'))
 
@@ -36,6 +34,7 @@ class AlitaConfig:
         self.mcp.setdefault('execution_timeout', 60)
         self.security.setdefault('sandbox_enabled', True)
         self.security.setdefault('allowed_imports', ['json', 'aiohttp', 'math', 'random'])
+        self.security.setdefault('use_docker', True)
 
     def get_workspace_path(self, sub_dir: str) -> Path:
         """Returns the absolute path to a subdirectory in the workspace."""
