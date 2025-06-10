@@ -59,6 +59,23 @@ python examples/basic_usage.py
 python examples/advanced_demo.py
 ```
 
+### Advanced Demo
+
+The `examples/advanced_demo.py` script walks through several tasks to showcase
+how the **ManagerAgent** can create and run new tools. It sequentially asks the
+agent to build utilities like an email validator, a text summarizer, and an API
+data fetcher. After each task is processed, the result is printed to the
+terminal.
+
+Run the demo from the project root with:
+
+```bash
+python alita_agent_prototype/examples/advanced_demo.py
+```
+
+You should see output for each sample task detailing the generated tool and its
+execution result.
+
 ## 🏗️ Architecture
 
 The framework is built on a modular design:
