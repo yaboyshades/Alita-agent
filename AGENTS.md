@@ -38,6 +38,13 @@ This document lists the remaining placeholder code and the concrete steps requir
 
 
 ### Progress
+## 7. Interactive Configuration
+- **File:** `alita_agent/config/settings.py`
+- **Feature:** Prompt the user for missing LLM provider, model, and API keys on first run and persist them to `.env`.
+
+### Progress
+- ✅ Config now saves credentials interactively when missing.
+
 - ✅ SandboxExecutor now attempts Docker execution with network isolation and falls back to subprocess when Docker is unavailable.
 
 

@@ -29,10 +29,12 @@ python install.py
 ### 2. Configure API Keys
 
 Edit the `.env` file that was created in the root directory and add your API keys.
+If you don't provide them ahead of time, running an example will prompt for the
+provider, model, and key and write them back to `.env`.
 
 ```bash
 # .env file
-OPENAI_API_KEY="your_openai_key_here"
+```
 GEMINI_API_KEY="your_gemini_key_here"
 LLM_PROVIDER="openai|gemini"
 LLM_MODEL="gpt-4|gemini-pro"
