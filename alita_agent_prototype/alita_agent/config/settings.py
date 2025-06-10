@@ -35,7 +35,7 @@ class AlitaConfig:
         self.planning.setdefault('max_react_steps', 10)
         self.mcp.setdefault('execution_timeout', 60)
         self.security.setdefault('sandbox_enabled', True)
-        self.security.setdefault('allowed_imports', ['json', 'requests', 'math', 'random'])
+        self.security.setdefault('allowed_imports', ['json', 'aiohttp', 'math', 'random'])
 
     def get_workspace_path(self, sub_dir: str) -> Path:
         """Returns the absolute path to a subdirectory in the workspace."""
