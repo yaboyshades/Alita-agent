@@ -4,6 +4,8 @@ from ..config.settings import AlitaConfig
 from ..utils.logging import setup_logging
 from .web_agent import WebAgent
 from .mcp_system import MCPSystem
+from .memory import HierarchicalMemorySystem
+from .planning import HybridPlanner
 from ..exceptions import ToolCreationError, ToolExecutionError
 from ..utils.llm_client import LLMClient
 
@@ -14,12 +16,15 @@ class ManagerAgent:
         self.logger = setup_logging("ManagerAgent")
         self.web_agent = WebAgent(config)
         self.mcp_system = MCPSystem(config, self.web_agent)
+        self.memory = HierarchicalMemorySystem(config)
+        self.planner = HybridPlanner(config)
         self.llm = LLMClient(config)
         self.logger.info("Manager Agent initialized.")
 
     async def process_task(self, user_query: str) -> Dict[str, Any]:
         self.logger.info(f"Received task: '{user_query}'")
         try:
+            plan = await self.planner.plan(user_query, [])
             # 1. Determine the name and description of the required tool
             tool_name = self._generate_tool_name_from_query(user_query)
             tool_description = f"A tool that can: {user_query}"
@@ -45,6 +50,7 @@ class ManagerAgent:
                 raise ToolExecutionError(f"Tool execution failed: {execution_result.error}")
 
             self.logger.info("Task processed successfully.")
+            await self.memory.store_episode({"query": user_query, "result": execution_result.result})
             return {"success": True, "result": execution_result.result}
 
         except (ToolCreationError, ToolExecutionError) as e:

@@ -8,6 +8,7 @@ from ..utils.logging import setup_logging
 from ..exceptions import ToolCreationError
 from .web_agent import WebAgent
 from ..utils.security import SandboxExecutor
+from ..utils.llm_client import LLMClient
 
 class MCPSystem:
     """Manages the lifecycle of Model Context Protocols (Tools)."""
@@ -17,8 +18,9 @@ class MCPSystem:
         self.web_agent = web_agent
         self.tools_dir = self.config.get_workspace_path("tools")
         self.sandbox = SandboxExecutor(config)
-        # NOTE: This would eventually call a real LLM API
-        self.llm_code_generator = self._mock_llm_code_generation
+        self.llm = LLMClient(config)
+        # Use the real LLM for code generation
+        self.llm_code_generator = self._generate_tool_code
 
     async def create_tool(self, name: str, task_description: str) -> None:
         self.logger.info(f"Initiating creation for tool: '{name}'")
@@ -31,13 +33,23 @@ class MCPSystem:
         if search_results and search_results.results:
             context_str = json.dumps(search_results.results[0], indent=2)
 
-        code = self.llm_code_generator(name, task_description, context_str)
+        code = await self.llm_code_generator(name, task_description, context_str)
         
         if await self.sandbox.validate_code(code):
             self._save_tool_to_disk(name, code, task_description)
             self.logger.info(f"Tool '{name}' created and saved successfully.")
         else:
             raise ToolCreationError(f"Generated code for '{name}' failed syntax validation.")
+
+    async def _generate_tool_code(self, name: str, description: str, context: str) -> str:
+        """Generate tool code using the configured LLM provider."""
+        prompt = (
+            "You are ToolsmithAI. Generate a self-contained Python script that "
+            "defines a function 'execute(params: dict)' to accomplish the "
+            f"following task: {description}.\nUse this context if helpful:\n{context}\n"
+            "Return only the code without markdown."
+        )
+        return await self.llm.generate(prompt)
 
     def _mock_llm_code_generation(self, name: str, description: str, context: str) -> str:
         self.logger.warning(f"Using MOCK code generation for tool '{name}'")

@@ -19,7 +19,7 @@ class ToolExecutionResult(BaseModel):
     error: Optional[str] = None
 
 class SandboxExecutor:
-    """A simplified sandbox for executing generated Python code."""
+    """Execute generated Python code in an isolated environment."""
     def __init__(self, config: AlitaConfig):
         self.config = config
         self.logger = setup_logging("SandboxExecutor")
@@ -28,7 +28,7 @@ class SandboxExecutor:
         self.logger.debug(f"SandboxExecutor using python executable: {self.python_executable}")
 
     async def execute_code(self, code: str, parameters: Dict[str, Any]) -> ToolExecutionResult:
-        """Runs code in a separate process."""
+        """Runs code in a Docker container if available, otherwise subprocess."""
         self.logger.info("Executing code in sandbox...")
         
         # Use a temporary file to run the script
@@ -41,21 +41,17 @@ class SandboxExecutor:
         self.logger.debug(f"Input JSON: {input_json}")
         
         try:
-            # Execute the script as a separate process
-            process = subprocess.Popen(
-                [self.python_executable, str(script_path)],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True
-            )
-            stdout, stderr = process.communicate(input=input_json, timeout=self.config.mcp['execution_timeout'])
-            self.logger.debug(f"Subprocess stdout: {stdout}")
-            self.logger.debug(f"Subprocess stderr: {stderr}")
-            # Try to parse the entire stdout as JSON first
+            if self.config.security.get('use_docker', True) and self._docker_available():
+                stdout, stderr, returncode = self._execute_with_docker(script_path, input_json)
+            else:
+                stdout, stderr, returncode = self._execute_subprocess(script_path, input_json)
+            self.logger.debug(f"Sandbox stdout: {stdout}")
+            self.logger.debug(f"Sandbox stderr: {stderr}")
+            if returncode != 0:
+                return ToolExecutionResult(success=False, result=None, error=stderr)
+
             try:
                 parsed = json.loads(stdout)
-                self.logger.debug(f"Successfully parsed JSON from full stdout: {parsed}")
                 return ToolExecutionResult(success=True, result=parsed, error=None)
             except json.JSONDecodeError:
                 self.logger.debug("Full stdout is not valid JSON, trying line-by-line.")
@@ -88,3 +84,40 @@ class SandboxExecutor:
             return True
         except SyntaxError:
             return False
+
+    def _docker_available(self) -> bool:
+        """Check if the docker CLI is available."""
+        try:
+            subprocess.run(["docker", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            return True
+        except Exception:
+            return False
+
+    def _execute_with_docker(self, script_path: Path, input_json: str):
+        """Run the code inside a Docker container."""
+        cmd = [
+            "docker", "run", "--rm", "--network", "none",
+            "-v", f"{script_path.parent}:/app", "-w", "/app",
+            "python:3.10-slim", "python", str(script_path.name)
+        ]
+        process = subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        stdout, stderr = process.communicate(input=input_json, timeout=self.config.mcp['execution_timeout'])
+        return stdout, stderr, process.returncode
+
+    def _execute_subprocess(self, script_path: Path, input_json: str):
+        """Run the code in a local subprocess (fallback)."""
+        process = subprocess.Popen(
+            [self.python_executable, str(script_path)],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        stdout, stderr = process.communicate(input=input_json, timeout=self.config.mcp['execution_timeout'])
+        return stdout, stderr, process.returncode
