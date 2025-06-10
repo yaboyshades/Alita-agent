@@ -59,6 +59,7 @@ python examples/advanced_demo.py
 python examples/gui_chat.py
 ```
 
+
 All task results are persisted to `workspace/memory/episodic.json`.
 
 ## 🏗️ Architecture
