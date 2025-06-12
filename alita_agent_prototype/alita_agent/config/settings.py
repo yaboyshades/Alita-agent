@@ -35,7 +35,7 @@ class AlitaConfig:
 
         self.mcp.setdefault('execution_timeout', 60)
         self.security.setdefault('sandbox_enabled', True)
-        self.security.setdefault('allowed_imports', ['json', 'aiohttp', 'math', 'random'])
+        self.security.setdefault('allowed_imports', ['json', 'aiohttp', 'math', 'random', 'sys'])
         self.security.setdefault('use_docker', True)
         self._ensure_credentials()
 
