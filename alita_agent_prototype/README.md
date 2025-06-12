@@ -37,8 +37,8 @@ provider, model, and key and write them back to `.env`.
 # .env file
 OPENAI_API_KEY="your_openai_key_here"
 GEMINI_API_KEY="your_gemini_key_here"
-LLM_PROVIDER="openai|gemini"
-LLM_MODEL="gpt-4|gemini-pro"
+LLM_PROVIDER="gemini"
+LLM_MODEL="gemini-pro"
 ```
 ### 3. Run the Examples
 

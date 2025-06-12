@@ -17,9 +17,6 @@ This document lists the remaining placeholder code and the concrete steps requir
 - ✅ `MCPSystem` now calls `LLMClient.generate` through the new `_generate_tool_code` method.
 
 
-### Progress
-- ✅ `MCPSystem` now calls `LLMClient.generate` through the new `_generate_tool_code` method.
-
 ## 2. Complete LLM Provider Support
 - **File:** `alita_agent/utils/llm_client.py`
 - **Placeholder:** `deepseek` branch raises `NotImplementedError`.
@@ -51,21 +48,8 @@ This document lists the remaining placeholder code and the concrete steps requir
   - Mount a temporary workspace directory and enforce network restrictions.
   - Propagate stdout/stderr and exit codes back to `MCPSystem`.
 
-
 ### Progress
 - ✅ SandboxExecutor now attempts Docker execution with network isolation and falls back to subprocess when Docker is unavailable.
-
-=======
-
-### Progress
-- ✅ SandboxExecutor now attempts Docker execution with network isolation and falls back to subprocess when Docker is unavailable.
-
-=======
-
-### Progress
-- ✅ SandboxExecutor now attempts Docker execution with network isolation and falls back to subprocess when Docker is unavailable.
-
-
 
 ## 4. Expand Testing Suite
 - **File:** `tests/`
@@ -101,13 +85,6 @@ This document lists the remaining placeholder code and the concrete steps requir
 ## 7. Interactive Configuration
 - **File:** `alita_agent/config/settings.py`
 - **Feature:** Prompt the user for missing LLM provider, model, and API keys on first run and persist them to `.env`.
-
 ### Progress
 - ✅ Config now saves credentials interactively when missing.
-
-
-### Progress
-- ✅ READMEs describe Docker sandboxing and persistent memory.
-- 
-
 Follow these steps sequentially to produce a no-nonsense v0.1 release of the Alita Agent where every module performs real work and no placeholders remain.
