@@ -1,8 +1,7 @@
 
 """The MCP System: Handles dynamic tool creation, validation, and execution."""
 import json
-from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from ..config.settings import AlitaConfig
 from ..utils.logging import setup_logging
 from ..exceptions import ToolCreationError
@@ -19,7 +18,7 @@ class MCPSystem:
         self.tools_dir = self.config.get_workspace_path("tools")
         self.sandbox = SandboxExecutor(config)
         self.llm = LLMClient(config)
-        # Use the real LLM for code generation
+        # Default to using the real LLM for code generation
         self.llm_code_generator = self._generate_tool_code
 
     async def create_tool(self, name: str, task_description: str) -> None:
@@ -51,42 +50,6 @@ class MCPSystem:
         )
         return await self.llm.generate(prompt)
 
-    def _mock_llm_code_generation(self, name: str, description: str, context: str) -> str:
-        self.logger.warning(f"Using MOCK code generation for tool '{name}'")
-        return f'''
-#!/usr/bin/env python3
-import sys
-import json
-
-def execute(params: dict):
-    """
-    Generated Tool: {name}
-    Description: {description}
-    Context used for generation:
-    {context}
-    """
-    # print(f"Executing MOCK tool '{name}' with parameters: {{params}}")
-    
-    # MOCK IMPLEMENTATION: A real tool would perform the actual task.
-    # This one just acknowledges the request and returns a success message.
-    result_data = {{
-        "status": "success",
-        "message": f"Tool '{name}' executed successfully with mock logic.",
-        "received_params": params
-    }}
-    return result_data
-
-if __name__ == "__main__":
-    # This block allows the script to be run directly from the command line
-    # It reads parameters from stdin and prints the result to stdout
-    if not sys.stdin.isatty():
-        input_params = json.load(sys.stdin)
-        result = execute(input_params)
-        print(json.dumps(result, indent=2))
-    else:
-        print("This script should be run with JSON input via stdin.")
-
-'''
 
     async def execute_tool(self, tool_name: str, parameters: Dict[str, Any]):
         tool_path = self.tools_dir / f"{tool_name}.py"

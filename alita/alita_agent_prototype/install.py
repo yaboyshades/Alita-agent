@@ -2,10 +2,8 @@
 Cross-platform installer for the Alita Agent Framework.
 Creates a virtual environment, installs dependencies, and sets up the .env file.
 """
-import os
 import subprocess
 import sys
-import venv
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).parent
@@ -34,10 +32,8 @@ def main():
 
     # 2. Determine Python and Pip executables
     if sys.platform == "win32":
-        python_executable = VENV_DIR / "Scripts" / "python.exe"
         pip_executable = VENV_DIR / "Scripts" / "pip.exe"
     else:
-        python_executable = VENV_DIR / "bin" / "python"
         pip_executable = VENV_DIR / "bin" / "pip"
 
     # 3. Install dependencies
