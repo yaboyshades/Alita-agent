@@ -1,6 +1,6 @@
 """Configuration settings for the Alita Agent Framework."""
 import os
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional
 from pathlib import Path
 from dataclasses import dataclass, field
 import sys

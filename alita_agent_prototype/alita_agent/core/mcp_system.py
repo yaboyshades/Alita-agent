@@ -1,8 +1,7 @@
 
 """The MCP System: Handles dynamic tool creation, validation, and execution."""
 import json
-from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from ..config.settings import AlitaConfig
 from ..utils.logging import setup_logging
 from ..exceptions import ToolCreationError
