@@ -19,7 +19,7 @@ def test_manager_agent_process_task(tmp_path):
 
     asyncio.run(run())
 
-def test_manager_agent_process_task():
+def test_manager_agent_process_task_default():
     config = AlitaConfig()
     agent = ManagerAgent(config)
 
