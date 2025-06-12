@@ -75,15 +75,22 @@ class SandboxExecutor:
             return ToolExecutionResult(success=False, result=None, error=str(e))
 
     async def validate_code(self, code: str) -> bool:
-        """
-        Placeholder for static code analysis (e.g., using AST or bandit).
-        For this prototype, it just checks for basic Python syntax.
-        """
+        """Perform a basic static analysis on the generated code."""
         try:
-            compile(code, '<string>', 'exec')
-            return True
+            import ast
+            tree = ast.parse(code)
         except SyntaxError:
             return False
+
+        allowed = set(self.config.security.get("allowed_imports", []))
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                for alias in node.names:
+                    mod = alias.name.split(".")[0]
+                    if mod not in allowed:
+                        self.logger.warning(f"Disallowed import detected: {mod}")
+                        return False
+        return True
 
     def _docker_available(self) -> bool:
         """Check if the docker CLI is available."""

@@ -7,9 +7,28 @@ def test_mcp_system_tool_creation_and_execution():
     config = AlitaConfig()
     web_agent = WebAgent(config)
     mcp = MCPSystem(config, web_agent)
-    # Use the mock generator for tests to avoid real API calls
+    # Use a local generator for tests to avoid real API calls
     async def mock_gen(name, desc, ctx):
-        return mcp._mock_llm_code_generation(name, desc, ctx)
+        return f"""#!/usr/bin/env python3
+import sys
+import json
+
+def execute(params: dict):
+    result_data = {{
+        'status': 'success',
+        'message': f"Tool '{name}' executed successfully with mock logic.",
+        'received_params': params,
+    }}
+    return result_data
+
+if __name__ == '__main__':
+    if not sys.stdin.isatty():
+        input_params = json.load(sys.stdin)
+        result = execute(input_params)
+        print(json.dumps(result, indent=2))
+    else:
+        print('This script should be run with JSON input via stdin.')
+"""
     mcp.llm_code_generator = mock_gen
     tool_name = "TestEchoTool"
     task_description = "A tool that echoes its input."
