@@ -1,10 +1,9 @@
-import os
-from typing import Optional
+
 
 class LLMClient:
     def __init__(self, config):
-        self.provider = (getattr(config, 'llm_provider', None) or "openai").lower()
-        self.model = getattr(config, 'llm_model', None) or "gpt-4"
+        self.provider = (getattr(config, 'llm_provider', None) or "gemini").lower()
+        self.model = getattr(config, 'llm_model', None) or "gemini-pro"
         self.config = config
 
     async def generate(self, prompt: str) -> str:
