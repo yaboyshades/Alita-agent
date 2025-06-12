@@ -24,7 +24,7 @@ class ManagerAgent:
     async def process_task(self, user_query: str) -> Dict[str, Any]:
         self.logger.info(f"Received task: '{user_query}'")
         try:
-            plan = await self.planner.plan(user_query, [])
+            await self.planner.plan(user_query, [])
             # 1. Determine the name and description of the required tool
             tool_name = self._generate_tool_name_from_query(user_query)
             tool_description = f"A tool that can: {user_query}"
