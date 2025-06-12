@@ -1,5 +1,3 @@
-
-
 # Alita Agent
 
 This repository contains the prototype of the Alita agent framework. The working code lives inside the `alita_agent_prototype` directory.
