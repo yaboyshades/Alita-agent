@@ -16,8 +16,8 @@ class AlitaConfig:
     # API Configuration
     openai_api_key: Optional[str] = field(default_factory=lambda: os.getenv('OPENAI_API_KEY'))
     gemini_api_key: Optional[str] = field(default_factory=lambda: os.getenv('GEMINI_API_KEY'))
-    llm_provider: Optional[str] = field(default_factory=lambda: os.getenv('LLM_PROVIDER', 'openai'))
-    llm_model: Optional[str] = field(default_factory=lambda: os.getenv('LLM_MODEL', 'gpt-4'))
+    llm_provider: Optional[str] = field(default_factory=lambda: os.getenv('LLM_PROVIDER', 'gemini'))
+    llm_model: Optional[str] = field(default_factory=lambda: os.getenv('LLM_MODEL', 'gemini-pro'))
 
     # Workspace Configuration
     workspace_dir: str = "workspace"
@@ -54,7 +54,7 @@ class AlitaConfig:
         changed = False
 
         if not self.llm_provider:
-            self.llm_provider = input("LLM provider (openai/gemini): ").strip() or "openai"
+            self.llm_provider = input("LLM provider (openai/gemini): ").strip() or "gemini"
             changed = True
 
         if self.llm_provider == "openai" and not self.openai_api_key:
