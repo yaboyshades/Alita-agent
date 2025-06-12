@@ -60,8 +60,8 @@ provider, model, and key and persist them to `.env` for future runs.
 # .env file
 OPENAI_API_KEY="your_openai_key_here"
 GEMINI_API_KEY="your_gemini_key_here"
-LLM_PROVIDER="openai|gemini"
-LLM_MODEL="gpt-4|gemini-pro"
+LLM_PROVIDER="gemini"
+LLM_MODEL="gemini-pro"
 ```
 
 ### 3. Run the Examples
@@ -104,4 +104,3 @@ To run the test suite, use `pytest`:
 ```bash
 pytest
 ```
-
