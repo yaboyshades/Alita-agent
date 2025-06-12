@@ -9,8 +9,30 @@ def test_manager_agent_process_task(tmp_path):
     config = AlitaConfig(workspace_dir=str(tmp_path))
     manager = ManagerAgent(config)
 
-    async def mock_gen(name, desc, ctx):
+    async def mock_gen(name, desc) 
+        return f"""#!/usr/bin/env python3
+import sys
+import json
+
+def execute(params: dict):
+    result_data = {{
+        'status': 'success',
+        'message': f"Tool '{name}' executed successfully with mock logic.",
+        'received_params': params,
+    }}
+    return result_data
+
+if __name__ == '__main__':
+    if not sys.stdin.isatty():
+        input_params = json.load(sys.stdin)
+        result = execute(input_params)
+        print(json.dumps(result, indent=2))
+    else:
+        print('This script should be run with JSON input via stdin.')
+"""
+=======
         return manager.mcp_system._mock_llm_code_generation(name, desc, ctx)
+
 
     manager.mcp_system.llm_code_generator = mock_gen
 
@@ -30,7 +52,26 @@ def test_manager_agent_process_task_default():
 
     # Patch MCPSystem generator to avoid real API calls
     async def mock_gen(name, desc, ctx):
-        return agent.mcp_system._mock_llm_code_generation(name, desc, ctx)
+        return f"""#!/usr/bin/env python3
+import sys
+import json
+
+def execute(params: dict):
+    result_data = {{
+        'status': 'success',
+        'message': f"Tool '{name}' executed successfully with mock logic.",
+        'received_params': params,
+    }}
+    return result_data
+
+if __name__ == '__main__':
+    if not sys.stdin.isatty():
+        input_params = json.load(sys.stdin)
+        result = execute(input_params)
+        print(json.dumps(result, indent=2))
+    else:
+        print('This script should be run with JSON input via stdin.')
+"""
     agent.mcp_system.llm_code_generator = mock_gen
 
     async def run():

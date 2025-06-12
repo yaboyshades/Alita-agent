@@ -20,7 +20,10 @@ source alita_agent_prototype/.venv/bin/activate
 python alita_agent_prototype/examples/basic_usage.py
 ```
 
-Alternatively you can `cd alita_agent_prototype` and run `python install.py` followed by `python examples/basic_usage.py` from inside that directory.
+Alternatively you can `cd alita_agent_prototype` and run `python install.py` followed by `python examples/basic_usage.py` 
+
+For full documentation and advanced usage, see [alita_agent_prototype/README.md](alita_agent_prototype/README.md).
+
 # Alita Agent Framework
 
 A minimalist dual-agent architecture that enables autonomous tool creation and self-evolution through symbolic learning and dynamic planning.
@@ -101,6 +104,4 @@ The framework is built on a modular design:
 
 To run the test suite, use `pytest`:
 
-```bash
-pytest
-```
+
