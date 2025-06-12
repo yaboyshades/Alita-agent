@@ -9,6 +9,11 @@ def test_manager_agent_process_task(tmp_path):
     config = AlitaConfig(workspace_dir=str(tmp_path))
     manager = ManagerAgent(config)
 
+    async def mock_gen(name, desc, ctx):
+        return manager.mcp_system._mock_llm_code_generation(name, desc, ctx)
+
+    manager.mcp_system.llm_code_generator = mock_gen
+
     async def run():
         query = "echo test"
         result = await manager.process_task(query)
