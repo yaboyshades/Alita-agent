@@ -4,26 +4,22 @@ This repository contains the prototype of the Alita agent framework. The working
 
 ## Quick Start
 
-1. Install dependencies and set up a virtual environment:
+1. Install dependencies and create a virtual environment:
 
 ```bash
 python alita_agent_prototype/install.py
 ```
 
-2. Activate the environment and run an example:
+2. Activate the environment and run an example script:
 
 ```bash
-# On Linux/macOS
 source alita_agent_prototype/.venv/bin/activate
+python alita_agent_prototype/examples/basic_usage.py
+```
 
-# Run the basic example
-python alita_agent
+For additional examples see the `examples/` folder inside `alita_agent_prototype`.
 
-Alternatively you can `cd alita_agent_prototype` and run `python install.py` followed by `python examples/basic_usage.py` from inside that directory.
-=======
-Alternatively you can `cd alita_agent_prototype` and run `python install.py` followed by `python examples/basic_usage.py` 
-
-For full documentation and advanced usage, see [alita_agent_prototype/README.md](alita_agent_prototype/README.md).
+Full documentation is available in [alita_agent_prototype/README.md](alita_agent_prototype/README.md).
 
 # Alita Agent Framework
 
@@ -43,7 +39,7 @@ The Python sources and tests live in the `alita_agent_prototype` directory.
 - Docker (for secure sandboxed code execution)
 - API keys for an LLM provider (OpenAI or Gemini)
 
-## ⚡ Quick Start
+## ⚡ Detailed Setup
 
 ### 1. Setup Environment
 
@@ -103,9 +99,11 @@ The framework is built on a modular design:
 
 ## 🧪 Testing
 
-To run the test suite, use `pytest`:
+To run the test suite, execute:
 
-
+```bash
+pytest -q
+```
 
 For full documentation and advanced usage, see [alita_agent_prototype/README.md](alita_agent_prototype/README.md).
 
