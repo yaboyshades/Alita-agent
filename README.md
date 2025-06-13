@@ -66,6 +66,9 @@ OPENAI_API_KEY="your_openai_key_here"
 GEMINI_API_KEY="your_gemini_key_here"
 LLM_PROVIDER="gemini"
 LLM_MODEL="gemini-pro"
+AUTH_TOKEN="your_auth_token"
+PROJECT_ID="your_project_id"
+INTEGRATION_UID="your_integration_uid"
 ```
 
 ### 3. Run the Examples
@@ -87,6 +90,12 @@ python examples/advanced_demo.py
 
 # Launch the GUI chat interface
 python examples/gui_chat.py
+
+# Launch the Streamlit demo for the Alita SDK
+streamlit run alita_local.py
+
+# List your Alita applications using the SDK
+python examples/alita_sdk_demo.py
 ```
 
 Task results are logged in `workspace/memory/episodic.json` for future reference.
@@ -112,3 +121,4 @@ For full documentation and advanced usage, see [alita_agent_prototype/README.md]
 ## 📚 Additional Documentation
 
 The `docs/` directory contains extended guides on architecture, setup, and usage examples. Start with [docs/overview.md](docs/overview.md) for a high-level look at the project.
+For Alita Platform integration, see [docs/alita_sdk.md](docs/alita_sdk.md).
