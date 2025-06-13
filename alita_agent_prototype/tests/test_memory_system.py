@@ -17,3 +17,17 @@ def test_memory_persistence(tmp_path):
         stats2 = await new_mem.get_memory_stats()
         assert stats2["episodic_episodes"] == 1
     asyncio.run(run())
+
+
+def test_memory_search(tmp_path):
+    config = AlitaConfig()
+    config.workspace_dir = str(tmp_path)
+    memory = HierarchicalMemorySystem(config)
+
+    async def run():
+        await memory.store_episode({"query": "first task", "result": "ok"})
+        await memory.store_episode({"query": "second task", "result": "ok"})
+        matches = await memory.search("second")
+        assert len(matches) == 1
+        assert matches[0]["query"] == "second task"
+    asyncio.run(run())

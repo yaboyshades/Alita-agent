@@ -8,6 +8,7 @@ A minimalist dual-agent architecture that enables autonomous tool creation and s
 - **Dual-Agent Design**: A `ManagerAgent` for orchestration and a `WebAgent` for research.
 - **Dynamic Tool Creation**: Uses a Model Context Protocol (MCP) system to generate, test, and save new capabilities on-the-fly.
 - **Security-First**: Includes provisions for code validation and sandboxed execution to run generated tools safely.
+- **Memory Search**: Retrieves related past episodes to inform new tasks.
 
 ## 📋 Requirements
 

@@ -27,6 +27,11 @@ class HierarchicalMemorySystem:
     async def get_memory_stats(self) -> Dict[str, int]:
         return {"episodic_episodes": len(self.episodic_memory)}
 
+    async def search(self, keyword: str) -> List[Dict[str, Any]]:
+        """Return episodes whose queries contain the given keyword (case-insensitive)."""
+        keyword_lower = keyword.lower()
+        return [ep for ep in self.episodic_memory if keyword_lower in ep.get("query", "").lower()]
+
     def _load_memory(self) -> List[Dict[str, Any]]:
         if self.memory_file.exists():
             try:

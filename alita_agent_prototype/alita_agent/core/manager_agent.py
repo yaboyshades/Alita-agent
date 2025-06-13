@@ -24,6 +24,12 @@ class ManagerAgent:
     async def process_task(self, user_query: str) -> Dict[str, Any]:
         self.logger.info(f"Received task: '{user_query}'")
         try:
+            # Retrieve related experiences to inform planning
+            related_episodes = await self.memory.search(user_query)
+            if related_episodes:
+                self.logger.info(
+                    f"Found {len(related_episodes)} related past episodes for context"
+                )
             await self.planner.plan(user_query, [])
             # 1. Determine the name and description of the required tool
             tool_name = self._generate_tool_name_from_query(user_query)
