@@ -1,4 +1,5 @@
 """Configuration settings for the Alita Agent Framework."""
+
 import os
 from typing import Dict, Any, Optional
 from pathlib import Path
@@ -9,15 +10,31 @@ from dotenv import load_dotenv, set_key
 # Load environment variables from a .env file
 load_dotenv()
 
+
 @dataclass
 class AlitaConfig:
     """Main configuration class for the Alita Agent Framework."""
 
     # API Configuration
-    openai_api_key: Optional[str] = field(default_factory=lambda: os.getenv('OPENAI_API_KEY'))
-    gemini_api_key: Optional[str] = field(default_factory=lambda: os.getenv('GEMINI_API_KEY'))
-    llm_provider: Optional[str] = field(default_factory=lambda: os.getenv('LLM_PROVIDER', 'gemini'))
-    llm_model: Optional[str] = field(default_factory=lambda: os.getenv('LLM_MODEL', 'gemini-pro'))
+    openai_api_key: Optional[str] = field(
+        default_factory=lambda: os.getenv("OPENAI_API_KEY")
+    )
+    gemini_api_key: Optional[str] = field(
+        default_factory=lambda: os.getenv("GEMINI_API_KEY")
+    )
+    llm_provider: Optional[str] = field(
+        default_factory=lambda: os.getenv("LLM_PROVIDER", "gemini")
+    )
+    llm_model: Optional[str] = field(
+        default_factory=lambda: os.getenv("LLM_MODEL", "gemini-pro")
+    )
+
+    # Alita Platform credentials
+    auth_token: Optional[str] = field(default_factory=lambda: os.getenv("AUTH_TOKEN"))
+    project_id: Optional[str] = field(default_factory=lambda: os.getenv("PROJECT_ID"))
+    integration_uid: Optional[str] = field(
+        default_factory=lambda: os.getenv("INTEGRATION_UID")
+    )
 
     # Workspace Configuration
     workspace_dir: str = "workspace"
@@ -30,13 +47,15 @@ class AlitaConfig:
 
     def __post_init__(self):
         """Set default nested configurations after initialization."""
-        self.memory.setdefault('max_episodes', 1000)
-        self.planning.setdefault('max_react_steps', 10)
+        self.memory.setdefault("max_episodes", 1000)
+        self.planning.setdefault("max_react_steps", 10)
 
-        self.mcp.setdefault('execution_timeout', 60)
-        self.security.setdefault('sandbox_enabled', True)
-        self.security.setdefault('allowed_imports', ['json', 'aiohttp', 'math', 'random', 'sys'])
-        self.security.setdefault('use_docker', True)
+        self.mcp.setdefault("execution_timeout", 60)
+        self.security.setdefault("sandbox_enabled", True)
+        self.security.setdefault(
+            "allowed_imports", ["json", "aiohttp", "math", "random", "sys"]
+        )
+        self.security.setdefault("use_docker", True)
         self._ensure_credentials()
 
     def get_workspace_path(self, sub_dir: str) -> Path:
@@ -47,14 +66,20 @@ class AlitaConfig:
 
     def _ensure_credentials(self) -> None:
         """Prompt the user for missing credentials and persist them."""
-        if not sys.stdin or not sys.stdin.isatty() or os.environ.get("PYTEST_CURRENT_TEST"):
+        if (
+            not sys.stdin
+            or not sys.stdin.isatty()
+            or os.environ.get("PYTEST_CURRENT_TEST")
+        ):
             return
 
         env_path = Path(__file__).resolve().parents[2] / ".env"
         changed = False
 
         if not self.llm_provider:
-            self.llm_provider = input("LLM provider (openai/gemini): ").strip() or "gemini"
+            self.llm_provider = (
+                input("LLM provider (openai/gemini): ").strip() or "gemini"
+            )
             changed = True
 
         if self.llm_provider == "openai" and not self.openai_api_key:
@@ -66,7 +91,19 @@ class AlitaConfig:
 
         if not self.llm_model:
             default_model = "gpt-4" if self.llm_provider == "openai" else "gemini-pro"
-            self.llm_model = input(f"Model name [{default_model}]: ").strip() or default_model
+            self.llm_model = (
+                input(f"Model name [{default_model}]: ").strip() or default_model
+            )
+            changed = True
+
+        if not self.auth_token:
+            self.auth_token = input("Alita AUTH_TOKEN: ").strip()
+            changed = True
+        if not self.project_id:
+            self.project_id = input("Alita PROJECT_ID: ").strip()
+            changed = True
+        if not self.integration_uid:
+            self.integration_uid = input("Alita INTEGRATION_UID: ").strip()
             changed = True
 
         if changed:
@@ -77,3 +114,9 @@ class AlitaConfig:
                 set_key(str(env_path), "OPENAI_API_KEY", self.openai_api_key)
             if self.llm_provider == "gemini" and self.gemini_api_key:
                 set_key(str(env_path), "GEMINI_API_KEY", self.gemini_api_key)
+            if self.auth_token:
+                set_key(str(env_path), "AUTH_TOKEN", self.auth_token)
+            if self.project_id:
+                set_key(str(env_path), "PROJECT_ID", str(self.project_id))
+            if self.integration_uid:
+                set_key(str(env_path), "INTEGRATION_UID", self.integration_uid)
