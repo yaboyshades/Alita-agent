@@ -108,3 +108,7 @@ To run the test suite, use `pytest`:
 
 
 For full documentation and advanced usage, see [alita_agent_prototype/README.md](alita_agent_prototype/README.md).
+
+## 📚 Additional Documentation
+
+The `docs/` directory contains extended guides on architecture, setup, and usage examples. Start with [docs/overview.md](docs/overview.md) for a high-level look at the project.
