@@ -100,6 +100,21 @@ python examples/alita_sdk_demo.py
 
 Task results are logged in `workspace/memory/episodic.json` for future reference.
 
+### 4. Command Line Interface
+
+After installing the package you can run tasks directly from the terminal using
+the `alita-agent` command:
+
+```bash
+# Process a single task
+alita-agent "write hello world in rust"
+
+# Start an interactive shell (type 'exit' or 'quit' to leave)
+alita-agent
+```
+
+The same interface is available via `python -m alita_agent`.
+
 ## 🏗️ Architecture
 
 The framework is built on a modular design:
