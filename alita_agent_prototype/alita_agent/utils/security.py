@@ -45,8 +45,11 @@ class SandboxExecutor:
                 stdout, stderr, returncode = self._execute_with_docker(script_path, input_json)
             else:
                 stdout, stderr, returncode = self._execute_subprocess(script_path, input_json)
-            self.logger.debug(f"Sandbox stdout: {stdout}")
-            self.logger.debug(f"Sandbox stderr: {stderr}")
+            self.logger.debug(f"Sandbox returncode: {returncode}")
+            self.logger.debug(f"Sandbox stdout: '{stdout}'")
+            self.logger.debug(f"Sandbox stderr: '{stderr}'")
+            self.logger.debug(f"Input JSON was: '{input_json}'")
+            
             if returncode != 0:
                 return ToolExecutionResult(success=False, result=None, error=stderr)
 
@@ -103,7 +106,7 @@ class SandboxExecutor:
     def _execute_with_docker(self, script_path: Path, input_json: str):
         """Run the code inside a Docker container."""
         cmd = [
-            "docker", "run", "--rm", "--network", "none",
+            "docker", "run", "--rm", "-i", "--network", "none",
             "-v", f"{script_path.parent}:/app", "-w", "/app",
             "python:3.10-slim", "python", str(script_path.name)
         ]
