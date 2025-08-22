@@ -16,4 +16,5 @@ def test_memory_persistence(tmp_path):
         new_mem = HierarchicalMemorySystem(config)
         stats2 = await new_mem.get_memory_stats()
         assert stats2["episodic_episodes"] == 1
+
     asyncio.run(run())

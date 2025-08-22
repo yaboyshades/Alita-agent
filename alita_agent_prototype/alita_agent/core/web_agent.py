@@ -1,14 +1,17 @@
 """The Web Agent: Information retrieval from external sources."""
+
 from typing import Dict, Any, List
 from dataclasses import dataclass
 import aiohttp
 from ..config.settings import AlitaConfig
 from ..utils.logging import setup_logging
 
+
 @dataclass
 class SearchResult:
     query: str
     results: List[Dict[str, Any]]
+
 
 class WebAgent:
     """A minimal asynchronous web search agent using DuckDuckGo."""
@@ -33,7 +36,11 @@ class WebAgent:
                 async with session.get(url, params=params, timeout=10) as resp:
                     data = await resp.json()
                     for item in data.get("RelatedTopics", []):
-                        if isinstance(item, dict) and "Text" in item and "FirstURL" in item:
+                        if (
+                            isinstance(item, dict)
+                            and "Text" in item
+                            and "FirstURL" in item
+                        ):
                             results.append(
                                 {
                                     "title": item["Text"],

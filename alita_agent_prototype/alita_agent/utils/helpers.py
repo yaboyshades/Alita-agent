@@ -1,6 +1,8 @@
 """General utility functions for the Alita Agent Framework."""
+
 import uuid
 from datetime import datetime
+
 
 def generate_unique_id(prefix: str = "item") -> str:
     """Generates a unique ID with a timestamp and random component."""

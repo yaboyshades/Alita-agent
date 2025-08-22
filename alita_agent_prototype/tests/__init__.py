@@ -1,4 +1,3 @@
-
 """Test package configuration for Alita Agent."""
 
 from pathlib import Path
