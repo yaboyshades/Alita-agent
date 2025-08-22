@@ -6,7 +6,12 @@ class LLMClient:
 
     async def generate(self, prompt: str) -> str:
         if self.provider == "openai":
-            import openai
+            try:
+                import openai
+            except ModuleNotFoundError as exc:
+                raise ValueError(
+                    "openai package is required to use the OpenAI provider"
+                ) from exc
 
             client = openai.AsyncOpenAI(api_key=self.config.openai_api_key)
             response = await client.chat.completions.create(
@@ -14,7 +19,12 @@ class LLMClient:
             )
             return response.choices[0].message.content.strip()
         elif self.provider == "gemini":
-            import google.generativeai as genai
+            try:
+                import google.generativeai as genai
+            except ModuleNotFoundError as exc:
+                raise ValueError(
+                    "google-generativeai package is required to use the Gemini provider"
+                ) from exc
 
             genai.configure(api_key=self.config.gemini_api_key)
             model = genai.GenerativeModel(self.model)
