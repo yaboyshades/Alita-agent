@@ -15,7 +15,7 @@ const post = async (url: string, body?: any): Promise<any> =>
   });
 
 export function registerAutomationCommands(ctx: vscode.ExtensionContext) {
-  const base = cfg<string>('cortex.proxyUrl', 'http://localhost:8000');
+  const base = cfg<string>('proxyUrl', 'http://localhost:8000');
 
   const runPy = vscode.commands.registerCommand('cortex.runPythonTests', async () => {
     try {
