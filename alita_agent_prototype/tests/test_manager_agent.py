@@ -51,6 +51,9 @@ if __name__ == '__main__':
         tool_name = manager._generate_tool_name_from_query(query)
         tool_file = config.get_workspace_path("tools") / f"{tool_name}.py"
         assert tool_file.exists()
+        assert manager.tool_registry.tool_exists(tool_name)
+        last_episode = manager.memory.episodic_memory[-1]
+        assert last_episode["tool"] == tool_name
 
     asyncio.run(run())
 

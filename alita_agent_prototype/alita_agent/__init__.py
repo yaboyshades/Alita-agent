@@ -8,6 +8,7 @@ from .core.web_agent import WebAgent
 from .core.memory import HierarchicalMemorySystem
 from .core.planning import HybridPlanner
 from .core.mcp_system import MCPSystem
+from .core.tool_registry import ToolRegistry
 
 __all__ = [
     "ManagerAgent",
@@ -15,4 +16,5 @@ __all__ = [
     "HierarchicalMemorySystem",
     "HybridPlanner",
     "MCPSystem",
+    "ToolRegistry",
 ]

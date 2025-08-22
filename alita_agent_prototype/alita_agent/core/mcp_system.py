@@ -8,18 +8,25 @@ from ..exceptions import ToolCreationError
 from .web_agent import WebAgent
 from ..utils.security import SandboxExecutor
 from ..utils.llm_client import LLMClient
+from .tool_registry import ToolRegistry
 
 
 class MCPSystem:
     """Manages the lifecycle of Model Context Protocols (Tools)."""
 
-    def __init__(self, config: AlitaConfig, web_agent: WebAgent):
+    def __init__(
+        self,
+        config: AlitaConfig,
+        web_agent: WebAgent,
+        tool_registry: ToolRegistry | None = None,
+    ):
         self.config = config
         self.logger = setup_logging("MCPSystem")
         self.web_agent = web_agent
         self.tools_dir = self.config.get_workspace_path("tools")
         self.sandbox = SandboxExecutor(config)
         self.llm = LLMClient(config)
+        self.tool_registry = tool_registry
         # Default to using the real LLM for code generation
         self.llm_code_generator = self._generate_tool_code
 
@@ -67,9 +74,12 @@ class MCPSystem:
     def _save_tool_to_disk(self, name: str, code: str, description: str):
         (self.tools_dir / f"{name}.py").write_text(code)
         metadata = {"name": name, "description": description}
-        (self.tools_dir / f"{name}.meta.json").write_text(
-            json.dumps(metadata, indent=2)
-        )
+        meta_path = self.tools_dir / f"{name}.meta.json"
+        meta_path.write_text(json.dumps(metadata, indent=2))
+        if self.tool_registry:
+            self.tool_registry.register_tool(name, description)
 
     async def tool_exists(self, tool_name: str) -> bool:
+        if self.tool_registry and self.tool_registry.tool_exists(tool_name):
+            return True
         return (self.tools_dir / f"{tool_name}.meta.json").exists()

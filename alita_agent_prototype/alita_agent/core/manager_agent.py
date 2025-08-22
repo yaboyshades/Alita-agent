@@ -7,6 +7,7 @@ from .web_agent import WebAgent
 from .mcp_system import MCPSystem
 from .memory import HierarchicalMemorySystem
 from .planning import HybridPlanner
+from .tool_registry import ToolRegistry
 from ..exceptions import ToolCreationError, ToolExecutionError
 from ..utils.llm_client import LLMClient
 
@@ -18,7 +19,10 @@ class ManagerAgent:
         self.config = config
         self.logger = setup_logging("ManagerAgent")
         self.web_agent = WebAgent(config)
-        self.mcp_system = MCPSystem(config, self.web_agent)
+        self.tool_registry = ToolRegistry(
+            self.config.get_workspace_path("tools")
+        )
+        self.mcp_system = MCPSystem(config, self.web_agent, self.tool_registry)
         self.memory = HierarchicalMemorySystem(config)
         self.planner = HybridPlanner(config)
         self.llm = LLMClient(config)
@@ -29,20 +33,24 @@ class ManagerAgent:
         try:
             await self.planner.plan(user_query, [])
             # 1. Determine the name and description of the required tool
-            tool_name = self._generate_tool_name_from_query(user_query)
-            tool_description = f"A tool that can: {user_query}"
-
-            # 2. Check if the tool already exists. If not, create it.
-            if not await self.mcp_system.tool_exists(tool_name):
-                self.logger.info(
-                    f"Tool '{tool_name}' not found. Initiating creation..."
-                )
-                await self.mcp_system.create_tool(
-                    name=tool_name,
-                    task_description=tool_description,
-                )
+            existing = self.tool_registry.find_tool_by_description(user_query)
+            if existing:
+                tool_name = existing
+                tool_description = self.tool_registry.tools[existing]
+                self.logger.info(f"Found existing tool by description: '{tool_name}'")
             else:
-                self.logger.info(f"Found existing tool: '{tool_name}'")
+                tool_name = self._generate_tool_name_from_query(user_query)
+                tool_description = f"A tool that can: {user_query}"
+                if not await self.mcp_system.tool_exists(tool_name):
+                    self.logger.info(
+                        f"Tool '{tool_name}' not found. Initiating creation..."
+                    )
+                    await self.mcp_system.create_tool(
+                        name=tool_name,
+                        task_description=tool_description,
+                    )
+                else:
+                    self.logger.info(f"Found existing tool: '{tool_name}'")
 
             # 3. Execute the tool. For this prototype, we'll pass the user query as the main parameter.
             self.logger.info(f"Executing tool '{tool_name}'...")
@@ -57,7 +65,11 @@ class ManagerAgent:
 
             self.logger.info("Task processed successfully.")
             await self.memory.store_episode(
-                {"query": user_query, "result": execution_result.result}
+                {
+                    "query": user_query,
+                    "tool": tool_name,
+                    "result": execution_result.result,
+                }
             )
             return {"success": True, "result": execution_result.result}
 
