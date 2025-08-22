@@ -1,0 +1,61 @@
+{
+  "name": "cortex-copilot-boost",
+  "displayName": "Cortex Copilot Boost",
+  "description": "Boost Copilot with repo-aware context, safe apply, and automation commands.",
+  "version": "0.1.0",
+  "publisher": "your-org",
+  "engines": { "vscode": "^1.83.0" },
+  "activationEvents": [
+    "onCommand:cortex.boostSelection",
+    "onCommand:cortex.applyGeneratedCode",
+    "onCommand:cortex.runPythonTests",
+    "onCommand:cortex.formatAndLint",
+    "onCommand:cortex.buildExtension",
+    "onView:cortex.situationBrief"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "cortex.boostSelection", "title": "Cortex: Boost Selection", "category": "Cortex" },
+      { "command": "cortex.applyGeneratedCode", "title": "Cortex: Apply Generated Code", "category": "Cortex" },
+      { "command": "cortex.runPythonTests", "title": "Cortex: Run Python Tests", "category": "Cortex" },
+      { "command": "cortex.formatAndLint", "title": "Cortex: Format & Lint (Python)", "category": "Cortex" },
+      { "command": "cortex.buildExtension", "title": "Cortex: Build VS Code Extension", "category": "Cortex" }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "cortex",
+          "title": "Cortex",
+          "icon": "resources/cortex.svg"
+        }
+      ]
+    },
+    "views": {
+      "cortex": [
+        { "id": "cortex.situationBrief", "name": "Situation Brief" }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "Cortex",
+      "properties": {
+        "cortex.proxyUrl": {
+          "type": "string",
+          "default": "http://localhost:8000",
+          "description": "Cortex proxy base URL"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.2",
+    "typescript": "^5.3.3",
+    "vsce": "^2.15.0",
+    "vscode": "^1.1.37"
+  }
+}
