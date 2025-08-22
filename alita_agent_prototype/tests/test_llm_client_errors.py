@@ -1,5 +1,6 @@
 import builtins
 import pytest
+import logging
 
 from alita_agent.config.settings import AlitaConfig
 from alita_agent.utils.llm_client import LLMClient
@@ -32,3 +33,18 @@ async def test_missing_openai_package(monkeypatch):
 
     with pytest.raises(ValueError, match="openai package is required"):
         await client.generate("test")
+
+
+@pytest.mark.asyncio
+async def test_generation_logs_provider(caplog):
+    config = AlitaConfig()
+    config.llm_provider = "unknown"
+    client = LLMClient(config)
+
+    caplog.set_level(logging.INFO)
+
+    with pytest.raises(ValueError, match="Unknown LLM provider"):
+        await client.generate("prompt")
+
+    assert "Using provider unknown" in caplog.text
+    assert "Unknown LLM provider: unknown" in caplog.text
