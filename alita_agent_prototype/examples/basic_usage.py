@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Basic usage example for the Alita Agent Framework.
@@ -11,8 +10,9 @@ from pathlib import Path
 # Add project root to the Python path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from alita_agent import ManagerAgent
-from alita_agent.config.settings import AlitaConfig
+from alita_agent import ManagerAgent  # noqa: E402
+from alita_agent.config.settings import AlitaConfig  # noqa: E402
+
 
 async def main():
     """Main example function."""
@@ -42,6 +42,7 @@ async def main():
             print("✅ Success!")
             print("📦 Result Payload:")
             import json
+
             print(json.dumps(result.get("result"), indent=2))
         else:
             print("❌ Failure!")
@@ -50,8 +51,11 @@ async def main():
 
     except Exception as e:
         print(f"\n💥 An unexpected error occurred during the demonstration: {e}")
-    
-    print("🎉 Basic usage example completed. Check the 'workspace/tools' directory for any new tools created.")
+
+    print(
+        "🎉 Basic usage example completed. Check the 'workspace/tools' directory for any new tools created."
+    )
+
 
 if __name__ == "__main__":
     asyncio.run(main())

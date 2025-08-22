@@ -10,7 +10,10 @@ def test_manager_agent_process_task(tmp_path):
 
     # Mock web search to avoid network calls
     async def mock_search(query):
-        return SearchResult(query=query, results=[{"title": "Mock result", "snippet": "Mock snippet"}])
+        return SearchResult(
+            query=query, results=[{"title": "Mock result", "snippet": "Mock snippet"}]
+        )
+
     manager.mcp_system.web_agent.search = mock_search
 
     async def mock_gen(name, desc, ctx):
@@ -58,7 +61,10 @@ def test_manager_agent_process_task_default():
 
     # Mock web search to avoid network calls
     async def mock_search(query):
-        return SearchResult(query=query, results=[{"title": "Mock result", "snippet": "Mock snippet"}])
+        return SearchResult(
+            query=query, results=[{"title": "Mock result", "snippet": "Mock snippet"}]
+        )
+
     agent.mcp_system.web_agent.search = mock_search
 
     # Patch MCPSystem generator to avoid real API calls
@@ -87,10 +93,12 @@ if __name__ == '__main__':
     except Exception as e:
         print(json.dumps({{"error": str(e)}}))
 """
+
     agent.mcp_system.llm_code_generator = mock_gen
 
     async def run():
         result = await agent.process_task("echo this text")
         assert result["success"]
         assert "success" in result["result"]["status"]
+
     asyncio.run(run())

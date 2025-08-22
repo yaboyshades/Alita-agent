@@ -8,8 +8,8 @@ import tkinter as tk
 # Add project root to the Python path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from alita_agent import ManagerAgent
-from alita_agent.config.settings import AlitaConfig
+from alita_agent import ManagerAgent  # noqa: E402
+from alita_agent.config.settings import AlitaConfig  # noqa: E402
 
 
 class AlitaChatGUI:

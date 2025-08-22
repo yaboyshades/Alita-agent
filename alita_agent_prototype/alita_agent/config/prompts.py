@@ -3,6 +3,7 @@ Prompt Templates for Alita Agent Framework.
 These are placeholders for when you integrate a real LLM for code generation.
 """
 
+
 class PromptTemplates:
     SYSTEM_PROMPT = """
 # Alita Agent System Prompt

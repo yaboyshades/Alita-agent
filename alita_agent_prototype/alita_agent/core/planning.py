@@ -2,17 +2,21 @@
 Hybrid Planning System (Placeholder)
 A simplified planner for this prototype.
 """
+
 from typing import Dict, Any, List
 from dataclasses import dataclass
 from ..config.settings import AlitaConfig
 from ..utils.logging import setup_logging
 
+
 @dataclass
 class PlanningResult:
     action_sequence: List[Dict[str, Any]]
 
+
 class HybridPlanner:
     """Very small planner that selects or creates tools."""
+
     def __init__(self, config: AlitaConfig):
         self.config = config
         self.logger = setup_logging("HybridPlanner")

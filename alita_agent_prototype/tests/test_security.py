@@ -9,4 +9,5 @@ def test_validate_code_disallows_import(tmp_path):
 
     async def run():
         assert not await executor.validate_code("import os\nprint('hi')")
+
     asyncio.run(run())

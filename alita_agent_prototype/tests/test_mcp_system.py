@@ -7,16 +7,20 @@ def test_mcp_system_tool_creation_and_execution():
 
     config = AlitaConfig()
     web_agent = WebAgent(config)
-    
+
     # Enable debug logging
     logging.getLogger("SandboxExecutor").setLevel(logging.DEBUG)
-    
+
     # Mock the web search to avoid network calls
     async def mock_search(query):
-        return SearchResult(query=query, results=[{"title": "Mock result", "snippet": "Mock snippet"}])
+        return SearchResult(
+            query=query, results=[{"title": "Mock result", "snippet": "Mock snippet"}]
+        )
+
     web_agent.search = mock_search
-    
+
     mcp = MCPSystem(config, web_agent)
+
     # Use a local generator for tests to avoid real API calls
     async def mock_gen(name, desc, ctx):
         return f"""#!/usr/bin/env python3
@@ -43,9 +47,11 @@ if __name__ == '__main__':
     except Exception as e:
         print(json.dumps({{"error": str(e)}}))
 """
+
     mcp.llm_code_generator = mock_gen
     tool_name = "TestEchoTool"
     task_description = "A tool that echoes its input."
+
     async def run():
         await mcp.create_tool(tool_name, task_description)
         result = await mcp.execute_tool(tool_name, {"echo": "hello"})
@@ -55,4 +61,5 @@ if __name__ == '__main__':
         assert result.success
         assert result.result["status"] == "success"
         assert result.result["received_params"]["echo"] == "hello"
+
     asyncio.run(run())
