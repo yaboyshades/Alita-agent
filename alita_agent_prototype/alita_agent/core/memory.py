@@ -30,6 +30,12 @@ class HierarchicalMemorySystem:
     async def get_memory_stats(self) -> Dict[str, int]:
         return {"episodic_episodes": len(self.episodic_memory)}
 
+    async def get_recent_episodes(self, limit: int = 5) -> List[Dict[str, Any]]:
+        """Return the most recent `limit` episodes in chronological order."""
+        if limit <= 0:
+            return []
+        return self.episodic_memory[-limit:]
+
     def _load_memory(self) -> List[Dict[str, Any]]:
         if self.memory_file.exists():
             try:
