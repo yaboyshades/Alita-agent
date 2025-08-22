@@ -11,6 +11,11 @@ class LLMClient:
     async def generate(self, prompt: str) -> str:
         self.logger.info(f"Using provider {self.provider}")
         if self.provider == "openai":
+            if not self.config.openai_api_key:
+                self.logger.error("OpenAI API key missing")
+                raise ValueError(
+                    "OpenAI API key is required to use the OpenAI provider"
+                )
             try:
                 import openai
             except ModuleNotFoundError as exc:
@@ -25,12 +30,15 @@ class LLMClient:
             )
             return response.choices[0].message.content.strip()
         elif self.provider == "gemini":
+            if not self.config.gemini_api_key:
+                self.logger.error("Gemini API key missing")
+                raise ValueError(
+                    "Gemini API key is required to use the Gemini provider"
+                )
             try:
                 import google.generativeai as genai
             except ModuleNotFoundError as exc:
-                self.logger.error(
-                    "google-generativeai package missing", exc_info=exc
-                )
+                self.logger.error("google-generativeai package missing", exc_info=exc)
                 raise ValueError(
                     "google-generativeai package is required to use the Gemini provider"
                 ) from exc

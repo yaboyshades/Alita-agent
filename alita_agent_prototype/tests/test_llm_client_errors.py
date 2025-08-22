@@ -36,6 +36,48 @@ async def test_missing_openai_package(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_missing_openai_api_key():
+    config = AlitaConfig()
+    config.llm_provider = "openai"
+    config.openai_api_key = None
+    client = LLMClient(config)
+
+    with pytest.raises(ValueError, match="OpenAI API key is required"):
+        await client.generate("test")
+
+
+@pytest.mark.asyncio
+async def test_missing_gemini_api_key():
+    config = AlitaConfig()
+    config.llm_provider = "gemini"
+    config.gemini_api_key = None
+    client = LLMClient(config)
+
+    with pytest.raises(ValueError, match="Gemini API key is required"):
+        await client.generate("test")
+
+
+@pytest.mark.asyncio
+async def test_missing_gemini_package(monkeypatch):
+    config = AlitaConfig()
+    config.llm_provider = "gemini"
+    config.gemini_api_key = "test-key"
+    client = LLMClient(config)
+
+    original_import = builtins.__import__
+
+    def fake_import(name, *args, **kwargs):
+        if name == "google.generativeai":
+            raise ModuleNotFoundError("No module named 'google.generativeai'")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", fake_import)
+
+    with pytest.raises(ValueError, match="google-generativeai package is required"):
+        await client.generate("test")
+
+
+@pytest.mark.asyncio
 async def test_generation_logs_provider(caplog):
     config = AlitaConfig()
     config.llm_provider = "unknown"
