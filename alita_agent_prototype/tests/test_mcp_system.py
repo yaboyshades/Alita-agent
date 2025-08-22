@@ -19,7 +19,10 @@ def test_mcp_system_tool_creation_and_execution():
 
     web_agent.search = mock_search
 
-    mcp = MCPSystem(config, web_agent)
+    from alita_agent.core.tool_registry import ToolRegistry
+
+    registry = ToolRegistry(config.get_workspace_path("tools"))
+    mcp = MCPSystem(config, web_agent, registry)
 
     # Use a local generator for tests to avoid real API calls
     async def mock_gen(name, desc, ctx):
@@ -54,6 +57,7 @@ if __name__ == '__main__':
 
     async def run():
         await mcp.create_tool(tool_name, task_description)
+        assert registry.tool_exists(tool_name)
         result = await mcp.execute_tool(tool_name, {"echo": "hello"})
         print(f"DEBUG: result.success = {result.success}")
         print(f"DEBUG: result.result = {result.result}")
