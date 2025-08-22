@@ -3,3 +3,5 @@ __pycache__/
 .venv/
 .env
 workspace/
+cortex-extension/node_modules/
+cortex-extension/out/
