@@ -1,9 +1,18 @@
 import * as vscode from 'vscode';
 
 const cfg = <T>(k: string, d: T) => vscode.workspace.getConfiguration('cortex').get<T>(k, d);
-const post = async (url: string, body?: any) =>
-  fetch(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: body ? JSON.stringify(body) : undefined })
-  .then(async r => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status} ${await r.text()}`))));
+// Helper to POST JSON and return the parsed body. We annotate the return type as
+// `Promise<any>` so callers are free to access response properties without
+// TypeScript flagging them as `unknown` when `strict` mode is enabled.
+const post = async (url: string, body?: any): Promise<any> =>
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined
+  }).then(async r => {
+    if (!r.ok) throw new Error(`HTTP ${r.status} ${await r.text()}`);
+    return r.json();
+  });
 
 export function registerAutomationCommands(ctx: vscode.ExtensionContext) {
   const base = cfg<string>('cortex.proxyUrl', 'http://localhost:8000');
