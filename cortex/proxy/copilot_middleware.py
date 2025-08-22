@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
-import os, glob, re
+import glob
+import re
 from cortex.common.logging import setup_logging, get_logger
 from cortex.tools.formatters import format_code_with_black
 from cortex.tools.testing import run_tests, run_linters
@@ -15,21 +16,28 @@ app = FastAPI(title="Cortex Copilot Proxy")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
 
 class AugmentIn(BaseModel):
     message: str
     context: Dict[str, Any] = {}
+
 
 class AugmentOut(BaseModel):
     messages: List[Dict[str, str]]
     max_tokens: int = 4000
     temperature: float = 0.1
 
+
 class ProcessIn(BaseModel):
     response: str
     original_prompt: str
+
 
 class FileChange(BaseModel):
     file: str
@@ -38,10 +46,12 @@ class FileChange(BaseModel):
     formatted: bool = False
     lint_passed: bool = False
 
+
 class TestResult(BaseModel):
     passed: bool
     output: str
     coverage: Optional[float] = None
+
 
 class ProcessOut(BaseModel):
     original_response: str
@@ -49,15 +59,33 @@ class ProcessOut(BaseModel):
     test_results: Optional[TestResult] = None
     lint_results: Optional[Dict[str, Any]] = None
 
+
 def _list_repo_files(limit: int = 50) -> List[str]:
     files = []
-    ignore_patterns = [".git/", "node_modules/", "cortex-extension/out/", "__pycache__/", ".vscode/"]
-    patterns = ["**/*.py", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json", "**/*.md", "**/*.yml", "**/*.yaml"]
+    ignore_patterns = [
+        ".git/",
+        "node_modules/",
+        "cortex-extension/out/",
+        "__pycache__/",
+        ".vscode/",
+    ]
+    patterns = [
+        "**/*.py",
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.json",
+        "**/*.md",
+        "**/*.yml",
+        "**/*.yaml",
+    ]
     for pattern in patterns:
         for file in glob.glob(pattern, recursive=True):
             if not any(ignored in file for ignored in ignore_patterns):
                 files.append(file)
     return files[:limit]
+
 
 def _build_system_message(situation_brief: str, relevant_files: List[str]) -> str:
     files_str = "\n".join(f"- {f}" for f in relevant_files[:10])
@@ -78,12 +106,15 @@ Rules:
 - Follow PEP 8 and project coding standards
 """
 
+
 def _simple_situation_brief() -> str:
     return "Current priorities: address failing tests, improve developer experience, maintain code quality. Prefer small, focused changes."
+
 
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "service": "cortex-proxy"}
+
 
 @app.post("/v1/augment-prompt", response_model=AugmentOut)
 async def augment_prompt(inp: AugmentIn):
@@ -91,11 +122,23 @@ async def augment_prompt(inp: AugmentIn):
     situation_brief = _simple_situation_brief()
     files = _list_repo_files(limit=20)
     sys_msg = _build_system_message(situation_brief, files)
-    log.info("augment_prompt", extra={"user_msg_length": len(user_msg), "file_count": len(files), "top_files": files[:5]})
-    return AugmentOut(
-        messages=[{"role": "system", "content": sys_msg}, {"role": "user", "content": user_msg}],
-        max_tokens=4000, temperature=0.1
+    log.info(
+        "augment_prompt",
+        extra={
+            "user_msg_length": len(user_msg),
+            "file_count": len(files),
+            "top_files": files[:5],
+        },
     )
+    return AugmentOut(
+        messages=[
+            {"role": "system", "content": sys_msg},
+            {"role": "user", "content": user_msg},
+        ],
+        max_tokens=4000,
+        temperature=0.1,
+    )
+
 
 @app.post("/v1/process-response", response_model=ProcessOut)
 async def process_response(inp: ProcessIn):
@@ -120,7 +163,7 @@ async def process_response(inp: ProcessIn):
             formatted_content = content
             formatting_success = True
 
-            if file_path.endswith('.py'):
+            if file_path.endswith(".py"):
                 try:
                     formatted_content = format_code_with_black(content)
                     formatting_success = True
@@ -137,21 +180,34 @@ async def process_response(inp: ProcessIn):
             else:
                 lint_passed = True
 
-            changes.append(FileChange(
-                file=file_path, content=formatted_content, description=description,
-                formatted=formatting_success, lint_passed=lint_passed
-            ))
+            changes.append(
+                FileChange(
+                    file=file_path,
+                    content=formatted_content,
+                    description=description,
+                    formatted=formatting_success,
+                    lint_passed=lint_passed,
+                )
+            )
 
     test_results = None
-    if any(change.file.endswith('.py') for change in changes):
+    if any(change.file.endswith(".py") for change in changes):
         try:
             r = run_tests()
-            test_results = TestResult(passed=r["passed"], output=r["output"], coverage=r.get("coverage"))
+            test_results = TestResult(
+                passed=r["passed"], output=r["output"], coverage=r.get("coverage")
+            )
         except Exception as e:
             log.error("test_execution_failed", extra={"error": str(e)})
 
-    log.info("process_response", extra={"changes_count": len(changes), "test_run": test_results is not None})
-    return ProcessOut(original_response=text, changes=changes, test_results=test_results)
+    log.info(
+        "process_response",
+        extra={"changes_count": len(changes), "test_run": test_results is not None},
+    )
+    return ProcessOut(
+        original_response=text, changes=changes, test_results=test_results
+    )
+
 
 # Mount automation API
 app.include_router(automation_router)

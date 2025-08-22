@@ -6,24 +6,43 @@ from cortex.common.logging import get_logger
 
 logger = get_logger(__name__)
 
+
 class PythonTestAutomation:
     def run_pytest_with_coverage(self, test_path: str = "tests/") -> Dict[str, Any]:
         """Run pytest with coverage reporting"""
         try:
             result = subprocess.run(
-                ["python", "-m", "pytest", test_path, "--cov=.", "--cov-report=json", "-v"],
-                capture_output=True, text=True, timeout=300,
+                [
+                    "python",
+                    "-m",
+                    "pytest",
+                    test_path,
+                    "--cov=.",
+                    "--cov-report=json",
+                    "-v",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=300,
             )
             coverage = None
             if os.path.exists("coverage.json"):
                 try:
                     with open("coverage.json", "r", encoding="utf-8") as f:
                         coverage_data = json.load(f)
-                        coverage = coverage_data.get("totals", {}).get("percent_covered")
+                        coverage = coverage_data.get("totals", {}).get(
+                            "percent_covered"
+                        )
                 finally:
-                    try: os.remove("coverage.json")
-                    except: pass
-            return {"success": result.returncode == 0, "output": result.stdout + result.stderr, "coverage": coverage}
+                    try:
+                        os.remove("coverage.json")
+                    except OSError:
+                        pass
+            return {
+                "success": result.returncode == 0,
+                "output": result.stdout + result.stderr,
+                "coverage": coverage,
+            }
         except subprocess.TimeoutExpired:
             return {"success": False, "error": "Test execution timed out"}
         except Exception as e:
@@ -33,7 +52,15 @@ class PythonTestAutomation:
         """Run Black formatting and Ruff linting (with fixes)"""
         results = {}
         fmt = subprocess.run(["black", "."], capture_output=True, text=True)
-        results["formatting"] = {"success": fmt.returncode == 0, "output": fmt.stdout + fmt.stderr}
-        lint = subprocess.run(["ruff", "check", "--fix", "."], capture_output=True, text=True)
-        results["linting"] = {"success": lint.returncode == 0, "output": lint.stdout + lint.stderr}
+        results["formatting"] = {
+            "success": fmt.returncode == 0,
+            "output": fmt.stdout + fmt.stderr,
+        }
+        lint = subprocess.run(
+            ["ruff", "check", "--fix", "."], capture_output=True, text=True
+        )
+        results["linting"] = {
+            "success": lint.returncode == 0,
+            "output": lint.stdout + lint.stderr,
+        }
         return results

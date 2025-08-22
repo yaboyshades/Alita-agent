@@ -5,19 +5,25 @@ from cortex.common.logging import get_logger
 
 logger = get_logger("cortex.tools.formatters")
 
+
 def format_code_with_black(code: str) -> str:
     """Format Python code using black"""
     import os
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(code)
         temp_file = f.name
     try:
-        result = subprocess.run(['black', '--quiet', '--line-length', '88', temp_file],
-                                capture_output=True, text=True, timeout=30)
+        result = subprocess.run(
+            ["black", "--quiet", "--line-length", "88", temp_file],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
         if result.returncode != 0:
             logger.warning("black_formatting_failed", extra={"stderr": result.stderr})
             return code
-        with open(temp_file, 'r', encoding='utf-8') as f:
+        with open(temp_file, "r", encoding="utf-8") as f:
             return f.read()
     except subprocess.TimeoutExpired:
         logger.warning("black_formatting_timeout")
@@ -26,23 +32,35 @@ def format_code_with_black(code: str) -> str:
         logger.error("black_formatting_error", extra={"error": str(e)})
         return code
     finally:
-        try: os.unlink(temp_file)
-        except: pass
+        try:
+            os.unlink(temp_file)
+        except OSError:
+            pass
+
 
 def format_code_with_ruff(code: str, file_path: str) -> Dict[str, Any]:
     """(Optional) Example: format/check with ruff"""
     import os
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(code)
         temp_file = f.name
     try:
-        check = subprocess.run(['ruff', 'check', '--select', 'I', temp_file],
-                               capture_output=True, text=True, timeout=30)
+        check = subprocess.run(
+            ["ruff", "check", "--select", "I", temp_file],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
         if check.returncode != 0:
-            fix = subprocess.run(['ruff', 'format', temp_file],
-                                 capture_output=True, text=True, timeout=30)
+            fix = subprocess.run(
+                ["ruff", "format", temp_file],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
             if fix.returncode == 0:
-                with open(temp_file, 'r', encoding='utf-8') as f:
+                with open(temp_file, "r", encoding="utf-8") as f:
                     return {"success": True, "formatted": True, "content": f.read()}
         return {"success": True, "formatted": False, "content": code}
     except subprocess.TimeoutExpired:
@@ -52,5 +70,7 @@ def format_code_with_ruff(code: str, file_path: str) -> Dict[str, Any]:
         logger.error("ruff_formatting_error", extra={"error": str(e)})
         return {"success": False, "error": str(e)}
     finally:
-        try: os.unlink(temp_file)
-        except: pass
+        try:
+            os.unlink(temp_file)
+        except OSError:
+            pass
